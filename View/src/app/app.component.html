@@ -1,0 +1,39 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<!--<hr>
+<nav>
+	| <a routerLink="/docente">Docente</a> |
+	| <a routerLink="/disciplina">Disciplinas</a> |
+</nav>
+<hr>-->
+
+<div class="header">
+     <div class="container">
+        <div class="row">
+           <div class="col-md-12">
+              <!-- Logo -->
+              <div class="logo">
+                 <h1 class="text-center"><a routerLink="/">{{title}}</a></h1>
+              </div>
+           </div>
+        </div>
+     </div>
+</div>
+
+<div class="page-content">
+	<div class="row">
+	  <div class="col-md-2">
+	  	<div class="sidebar content-box" style="display: block;">
+            <ul class="nav">
+                <!-- Main menu -->
+                <li class="current"><a routerLink="/disciplina"><i class="glyphicon glyphicon-home"></i> Disciplina</a></li>      
+                <li class="current"><a routerLink="/docente"><i class="glyphicon glyphicon-home"></i> Docente</a></li>
+            </ul>
+         </div>
+	  </div>
+	  <div class="col-md-10">
+	  	<div class="row">
+	  		<router-outlet></router-outlet>
+	  	</div>
+	  </div>
+	</div>
+</div>

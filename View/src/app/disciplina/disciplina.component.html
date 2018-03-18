@@ -1,0 +1,72 @@
+<!--<div>Carregando</div>-->
+
+<div class="col-md-6">
+	<div class="content-box-large">
+		<div class = "text-center"> 		
+			<p>{{mensagem}}</p>
+			<p>Modo atual: {{modo}}</p>
+		</div>
+	</div>
+	<div class="content-box-large">
+		<div class = "text-center"> 
+			<p>Clique em <a class = "glyphanchor" (click)="cadastrar()"><i class="glyphicon glyphicon-plus"></i></a> para adicionar uma nova disciplina.</p>
+		</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Perfil</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor= "let d of data">
+              <td>{{d[0]}}</td>
+              <td>{{d[1]}}</td>
+              <td>{{d[2]}}</td>
+              <td><a class = "glyphanchor" (click)="exibir(d)">| <i class="glyphicon glyphicon-eye-open"></i></a> | <a class = "glyphanchor" (click)="editar(d)"><i class="glyphicon glyphicon-edit"></i></a> | <a class = "glyphanchor" (click)="remover(d)"><i class="glyphicon glyphicon-remove"></i></a> |</td>
+            </tr>
+          </tbody>
+        </table>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-6" *ngIf="conferir('formulario')">
+	<div class="content-box-large">
+		<form (ngSubmit)="submeter()" #disciplinaForm="ngForm">
+			<div class="form-group">
+				<label for="codigo">Código</label>
+				<input type="text" class="form-control" id="codigo" required [(ngModel)]="atual.codigo" name="codigo">
+			</div>
+
+			<div class="form-group">
+				<label for="nome">Nome</label>
+				<input type="text" class="form-control" id="nome" required [(ngModel)]="atual.nome" name="nome">
+			</div>
+
+			<div class="form-group">
+				<label for="perfil">Perfil</label>
+				<input type="text" class="form-control" id="perfil" required [(ngModel)]="atual.perfil" name="perfil">
+			</div>
+
+			<div class="form-group">
+				<label for="chTeorica">Carga horária teórica</label>
+				<input type="number" class="form-control" id="chTeorica" required [(ngModel)]="atual.chTeorica" name="chTeorica">
+			</div>
+
+			<div class="form-group">
+				<label for="chPratica">Carga horária prática</label>
+				<input type="number" class="form-control" id="chPratica" required [(ngModel)]="atual.chPratica" name="chPratica">
+			</div>
+
+			<div class = "text-center" *ngIf = "conferir('botao')">
+				<button type="submit" class="btn btn-success">{{modo}}</button>
+			</div>				
+		</form>
+	</div>
+</div>
+
+
