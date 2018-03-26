@@ -6,15 +6,21 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { DisciplinaComponent } from './disciplina/disciplina.component';
+import { PerfilComponent } from './perfil/perfil.component';
+import { LoginComponent } from './login/login.component';
 
 const appRoutes: Routes = [
-  { path: 'disciplina', component: DisciplinaComponent }
+  { path: 'disciplinas', component: DisciplinaComponent },
+  { path: 'perfis', component: PerfilComponent },
+  { path: '', component: LoginComponent }
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
-    DisciplinaComponent
+    DisciplinaComponent,
+    PerfilComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

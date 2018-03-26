@@ -1,0 +1,2 @@
+create table perfil (codigo int UNSIGNED AUTO_INCREMENT, nome varchar(50), abreviacao varchar(3), PRIMARY KEY(codigo));
+create table disciplina (codigo varchar(6), nome varchar(50), perfil int UNSIGNED, chTeorica int, chPratica int, PRIMARY KEY(codigo), FOREIGN KEY(perfil) REFERENCES perfil(codigo));

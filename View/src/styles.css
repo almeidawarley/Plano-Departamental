@@ -9,6 +9,10 @@ body {
   padding: 0px;
 }
 
+.gfloat-right{
+  float: right;
+}
+
 .glyphanchor {
   color:black;
   cursor: pointer;

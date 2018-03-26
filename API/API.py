@@ -1,6 +1,6 @@
-from flask import Flask, request
-from flask_cors import CORS
 import json
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flaskext.mysql import MySQL
 
 app = Flask(__name__)
@@ -12,77 +12,103 @@ app.config['MYSQL_DATABASE_DB'] = 'planodepartamental'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-document = {}
+if __name__ == '__main__':  
+    app.run(host = '127.0.0.1', debug = True)
 
-@app.route("/removerdisciplina", methods = ['POST'])
-def removerdisc():
-	retorno = json.loads(request.data)
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	command = 'DELETE FROM disciplina WHERE codigo = "' + retorno['codigo'] + '"'
-	cursor.execute(command)
-	conn.commit()
-	return 'alo'
+def criar_json(cursor):
+	dados = cursor.fetchall();
+	json = {'mensagem': [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in dados]}
+	return json
 
-@app.route("/recuperar/<codigo>", methods = ['GET'])
-def recuperardisc(codigo):
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	command = 'SELECT * FROM disciplina WHERE codigo = "' + codigo + '"'
-	cursor.execute(command)
-	data = cursor.fetchone()
-	return json.dumps(data)
-
-@app.route("/listadisciplina", methods = ['GET'])
-def disciplinas():
-	command = 'SELECT * FROM disciplina'
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	cursor.execute(command)
-	data = cursor.fetchall()
-	return json.dumps(data)
+@app.route("/perfil", methods=['GET'])
+def listar_perfis():
+	comando = 'SELECT * FROM perfil'
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	cursor.execute(comando)
+	retorno = criar_json(cursor)
+	return json.dumps(retorno)
 
 @app.route("/disciplina", methods = ['GET'])
-def disciplina():
-	document['codigo'] = "DCC000"
-	document['nome'] = "Teoria dos Grafos"
-	document['perfil'] = "IC"
-	document['chTeorica'] = 2
-	document['chPratica'] = 2
-	return json.dumps(document)
+def listar_disciplinas():
+	comando = 'SELECT d.*, p.perfilNome FROM disciplina d JOIN perfil p ON d.perfil = p.codigo'
+	conexao= mysql.connect()
+	cursor = conexao.cursor()
+	cursor.execute(comando)
+	retorno = criar_json(cursor)
+	return json.dumps(retorno)
 
-@app.route("/docente", methods = ['GET'])
-def docente():
-	document['nome'] = "Stenio"
-	document['sobrenome'] = "Sa"
-	document['perfil'] = "IC"
-	return json.dumps(document)
-
-@app.route("/json", methods = ['GET','POST'])
-def hell():
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	command = 'SELECT * FROM disciplina'
-	cursor.execute(command)
-	data = cursor.fetchall()
-	return data[0][0]
-
-@app.route("/put", methods = ['PUT'])
-def rect():
+@app.route("/perfil/", methods = ['PUT'])
+def atualizar_perfil():
 	retorno = json.loads(request.data)
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	command = 'INSERT INTO disciplina (codigo, nome, perfil, chTeorica, chPratica)	VALUES ("' + retorno['codigo'] + '","' + retorno['nome'] + '","' + retorno['perfil'] + '",' + str(retorno['chTeorica']) + ', ' + str(retorno['chPratica'])+')'
-	cursor.execute(command)
-	conn.commit()
-	return 'alo'
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	comando = 'UPDATE perfil SET nome = "' + retorno['nome'] + '", abreviacao = "' + retorno['abreviacao'] +'" WHERE codigo = ' + str(retorno['codigo'])
+	cursor.execute(comando)
+	return jsonify({'sucesso' : True, 'mensagem': 'alor'})
 
-@app.route("/rec", methods = ['GET','POST'])
-def recebedor():
+@app.route("/perfil/<string:codigo>", methods = ['DELETE'])
+def remover_perfil(codigo):
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	comando = 'DELETE FROM perfil WHERE codigo = ' + str(codigo)
+	cursor.execute(comando)
+	conexao.commit()
+	return jsonify({'sucesso' : True, 'mensagem': 'alor'})
+
+@app.route("/perfil/", methods = ['POST'])
+def adicionar_perfil():
 	retorno = json.loads(request.data)
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	command = 'INSERT INTO disciplina (codigo, nome, perfil, chTeorica, chPratica)	VALUES ("' + retorno['codigo'] + '","' + retorno['nome'] + '","' + retorno['perfil'] + '",' + str(retorno['chTeorica']) + ', ' + str(retorno['chPratica'])+')'
-	cursor.execute(command)
-	conn.commit()
-	return 'alo'
+	comando = 'INSERT INTO perfil (nome, abreviacao) VALUES ("' + retorno['nome'] + '","' + retorno['abreviacao'] + '")'
+	cursor.execute(comando)
+	conexao.commit()
+	return jsonify({'sucesso' : True, 'mensagem': 'alor'})
+
+@app.route("/perfil/<string:codigo>", methods = ['GET'])
+def recuperar_perfil(codigo):
+	conexao = mysql.connect()
+	cursor = conexao.cursor()	
+	comando = 'SELECT * FROM perfil WHERE codigo = ' + codigo
+	cursor.execute(comando)
+	return json.dumps(criar_json(cursor))
+
+@app.route("/disciplina/", methods = ['PUT'])
+def atualizar_disciplina():
+	requisicao = json.loads(request.data)
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	comando = 'UPDATE disciplina SET nome = "' + requisicao['nome'] + '", perfil = ' + str(requisicao['perfil']) + ', chTeorica = ' + str(requisicao['chTeorica']) + ', chPratica = ' + str(requisicao['chPratica']) + ' WHERE codigo = "' + requisicao['codigo'] + '"'
+	cursor.execute(comando)
+	conexao.commit()
+	return jsonify({'sucesso' : True, 'mensagem': 'alor'})
+
+@app.route("/disciplina/<string:codigo>", methods = ['DELETE'])
+def remover_disciplina(codigo):
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	comando = 'DELETE FROM disciplina WHERE codigo = "' + codigo + '"'
+	cursor.execute(comando)
+	conexao.commit()
+	return jsonify({'sucesso' : True, 'mensagem': 'alor'})
+
+@app.route("/disciplina/", methods = ['POST'])
+def adicionar_disciplina():
+	token = 'abcdf'
+	if token == request.headers.get('Authorization'):
+		requisicao = json.loads(request.data)
+		conexao = mysql.connect()
+		cursor = conexao.cursor()
+		comando = 'INSERT INTO disciplina (codigo, nome, perfil, chTeorica, chPratica)	VALUES ("' + requisicao['codigo'] + '","' + requisicao['nome'] + '",' + str(requisicao['perfil']) + ',' + str(requisicao['chTeorica']) + ', ' + str(requisicao['chPratica'])+')'
+		cursor.execute(comando)
+		conexao.commit()
+		return jsonify({'sucesso' : True, 'mensagem': 'alor'})
+	else:
+		return jsonify({'sucesso' : False, 'mensagem': 'Erro ao validar usuario'})
+
+@app.route("/disciplina/<string:codigo>", methods = ['GET'])
+def recuperar_disciplina(codigo):	
+	conexao = mysql.connect()
+	cursor = conexao.cursor()
+	comando = 'SELECT * FROM disciplina WHERE codigo = "' + codigo + '"'
+	cursor.execute(comando)
+	return json.dumps(criar_json(cursor))

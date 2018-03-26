@@ -1,38 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { Disciplina } from '../disciplina';
+import { Perfil } from '../perfil';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-disciplina',
-  templateUrl: './disciplina.component.html',
-  styleUrls: ['./disciplina.component.css']
+  selector: 'app-perfil',
+  templateUrl: './perfil.component.html',
+  styleUrls: ['./perfil.component.css']
 })
-export class DisciplinaComponent implements OnInit {
-  
-  atual : Disciplina;
-  data : any;
-  perfis: any;
+export class PerfilComponent implements OnInit {
+
+  atual : Perfil; // armazena objeto que aparece para o usuário
+  data : any; // recebe os registros que são retornados da base de dados pela API
 
   modo : string; // Inicial, Cadastrar, Editar, Remover
-  mensagem : string;
+  mensagem : string; // mensagem exibida para o usuário
   erro: string;
   alerta: string;
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.mensagem = 'Olá, bem-vindo ao cadastro de disciplinas!';
+  	this.mensagem = 'Olá, bem-vindo ao cadastro de perfis!';
     this.alerta = 'alert-info';
     this.erro = '';
-    this.atual = new Disciplina('','',0,0,0);
+    this.atual = new Perfil(0,'','');
     this.atualizar();
   }
 
   validar(){
-    if (this.atual.codigo.length != 6){
+    /*if (this.atual.codigo.length != 6){
       this.erro += "<br> > O campo código deve possuir seis dígitos ";
     }
     if (this.atual.nome.length < 5){
@@ -40,7 +36,8 @@ export class DisciplinaComponent implements OnInit {
     }
     let retorno = this.atual.codigo.length == 6 && this.atual.nome.length >= 5;
 
-    return retorno;    
+    return retorno;*/
+    return true;    
   }
 
   cancelar(){
@@ -55,28 +52,27 @@ export class DisciplinaComponent implements OnInit {
         let header = new HttpHeaders();    
         let self = this;
         header.append('Content-Type', 'application/json');
-        header.append('Authorization', 'abcde');
-      	this.http.post<string>('http://127.0.0.1:5000/disciplina/', JSON.stringify(this.atual), {headers: header})
-      	.subscribe(data => {if(!data['sucesso']) alert(data['mensagem']);self.atualizar();});
-        this.mensagem = 'Disciplina cadastrada com sucesso!';
+      	this.http.post<string>('http://127.0.0.1:5000/perfil/0', JSON.stringify(this.atual), {headers: header})
+      	.subscribe(data => {self.atualizar();});
+        this.mensagem = 'Perfil cadastrado com sucesso!';
         this.alerta = 'alert-success';
       }
       if (this.modo == 'Editar'){
         let header = new HttpHeaders();    
         let self = this;
         header.append('Content-Type', 'application/json');
-        this.http.put<string>('http://127.0.0.1:5000/disciplina/', JSON.stringify(this.atual), {headers: header})
-        .subscribe(data => {alert(data['mensagem']);self.atualizar();});
-        this.mensagem = 'Disciplina editada com sucesso!';
+        this.http.put<string>('http://127.0.0.1:5000/perfil/0', JSON.stringify(this.atual), {headers: header})
+        .subscribe(data => {self.atualizar();});
+        this.mensagem = 'Perfil editado com sucesso!';
         this.alerta = 'alert-success';
       }
-      if(this.modo == 'Remover'){
+      if (this.modo == 'Remover'){
         let header = new HttpHeaders();
         let self = this;   
         header.append('Content-Type', 'application/json');
-        this.http.delete<string>('http://127.0.0.1:5000/disciplina' + '/' + this.atual.codigo, {headers: header})
+        this.http.delete<string>('http://127.0.0.1:5000/perfil' + '/' + this.atual.codigo, {headers: header})
         .subscribe(data => {self.atualizar();});
-        this.mensagem = 'Disciplina removida com sucesso!';
+        this.mensagem = 'Perfil removido com sucesso!';
         this.alerta = 'alert-success';
       }
     }else{
@@ -86,34 +82,35 @@ export class DisciplinaComponent implements OnInit {
 
   atualizar(){
     this.modo = 'Inicial';
-    this.http.get('http://127.0.0.1:5000/disciplina')
+    this.http.get('http://127.0.0.1:5000/perfil')
     .subscribe(data => {this.data = data['mensagem'];});
-    this.http.get('http://127.0.0.1:5000/perfil').
-    subscribe(data => {this.perfis = data['mensagem'];});
   }
 
   cadastrar(){
     this.modo = 'Cadastrar';
     this.mensagem = 'Cadastro em processo';
     this.alerta = 'alert-warning';
-    this.atual.atualizar('','','',0,0);
+    this.atual.atualizar(0,'','');
   }
 
   editar(registro){
     this.modo = 'Editar';
     this.mensagem = 'Edição em processo';
     this.alerta = 'alert-warning';
-    this.atual.atualizar(registro['codigo'], registro['nome'], registro['perfil'], registro['chTeorica'], registro['chPratica']);
+    this.atual.atualizar(registro['codigo'], registro['perfilNome'], registro['abreviacao']);
   }
 
   remover(registro){
-    this.modo = 'Remover';    
+    this.modo = 'Remover';
     this.mensagem = 'Remoção em processo';
     this.alerta = 'alert-warning';
-    this.atual.atualizar(registro['codigo'], registro['nome'], registro['perfil'], registro['chTeorica'], registro['chPratica']);
+    this.atual.atualizar(registro['codigo'], registro['perfilNome'], registro['abreviacao']);    
   }
 
   conferir(palavra){
+    if(palavra == 'exibirCodigo'){
+      return (this.modo == 'Editar');
+    }
     if(palavra == 'mostrarFormulario'){
       return (this.modo  == 'Cadastrar' || this.modo == 'Editar' || this.modo == 'Remover');
     }
@@ -127,4 +124,5 @@ export class DisciplinaComponent implements OnInit {
       return this.data == undefined;
     }
   }
+
 }
