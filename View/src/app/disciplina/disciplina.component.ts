@@ -57,7 +57,7 @@ export class DisciplinaComponent implements OnInit {
         header.append('Content-Type', 'application/json');
         header.append('Authorization', 'abcde');
       	this.http.post<string>('http://127.0.0.1:5000/disciplina/', JSON.stringify(this.atual), {headers: header})
-      	.subscribe(data => {if(!data['sucesso']) alert(data['mensagem']);self.atualizar();});
+      	.subscribe(data => {self.atualizar();});
         this.mensagem = 'Disciplina cadastrada com sucesso!';
         this.alerta = 'alert-success';
       }
@@ -66,7 +66,7 @@ export class DisciplinaComponent implements OnInit {
         let self = this;
         header.append('Content-Type', 'application/json');
         this.http.put<string>('http://127.0.0.1:5000/disciplina/', JSON.stringify(this.atual), {headers: header})
-        .subscribe(data => {alert(data['mensagem']);self.atualizar();});
+        .subscribe(data => {self.atualizar();});
         this.mensagem = 'Disciplina editada com sucesso!';
         this.alerta = 'alert-success';
       }
