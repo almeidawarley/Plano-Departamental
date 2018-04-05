@@ -86,9 +86,9 @@ export class DisciplinaComponent implements OnInit {
 
   atualizar(){
     this.modo = 'Inicial';
-    this.http.get('http://127.0.0.1:5000/disciplina')
+    this.http.get('http://127.0.0.1:5000/disciplina/')
     .subscribe(data => {this.data = data['mensagem'];});
-    this.http.get('http://127.0.0.1:5000/perfil').
+    this.http.get('http://127.0.0.1:5000/perfil/').
     subscribe(data => {this.perfis = data['mensagem'];});
   }
 
