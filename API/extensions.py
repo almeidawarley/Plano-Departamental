@@ -1,3 +1,3 @@
-from flaskext.mysql import MySQL  
+from flaskext.mysql import MySQL
 
 mysql = MySQL()
