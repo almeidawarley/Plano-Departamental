@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from extensions import mysql
+from database import engine, Base
 
 from disciplina.controller import disciplina
 from perfil.controller import perfil
@@ -11,16 +12,16 @@ import jwt
 app = Flask(__name__)
 CORS(app)
 
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'planodepartamental'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
-
 def criar_json(cursor):
 	dados = cursor.fetchall();
 	json = {'mensagem': [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in dados]}
 	return json
+
+@app.route("/criar")
+def criar():
+	Base.metadata.create_all(engine)
+	return json.dumps({'opa':'opa'})
+
 
 @app.route("/login", methods=['POST'])
 def login():

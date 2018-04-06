@@ -1,6 +1,7 @@
 from flask import Blueprint
 from extensions import mysql
 import json
+from dao import Disciplina
 
 disciplina = Blueprint('disciplina', __name__)
 
